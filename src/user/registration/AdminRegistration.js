@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
-import ToastMessage from '../Toast';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import { config } from '../const';
+import ToastMessage from '../../common-components/Toast';
+import * as authAction from "../../reducer-store/actions/authActions";
+import { isValidEmail } from '../../common-components/formValidator';
 
-const CustomerRegistration = () => {
+const AdminRegistration = () => {
   const [objData, setObjData] = useState({});
+  const { adminRegister } = authAction;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,16 +16,28 @@ const CustomerRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const resposne = await axios.post("http://localhost:5000/api/auth/register-user", objData, config)
-      .then((res) => toast.success(res?.data?.msg), setObjData({}))
-      .catch((err) => toast.error(err?.response?.data?.errorMsg))
+
+    if (isValidEmail(objData?.email)) {
+      let resData = await adminRegister(objData);
+
+      if (resData?.error) {
+        toast.error(resData?.errorMsg);
+        return;
+      }
+      else {
+        toast.success(resData?.msg);
+        return;
+      }
+    } else {
+      console.log("Not a valid email")
+    }
   };
 
   return (
     <Container maxWidth="sm">
       <ToastMessage />
       <Typography variant="h4" gutterBottom>
-        Customer Registration
+        Admin Registration
       </Typography>
       <form onSubmit={handleSubmit}>
         <TextField
@@ -34,6 +47,7 @@ const CustomerRegistration = () => {
           margin="normal"
           value={objData.firstName}
           onChange={handleChange}
+          required
         />
         <TextField
           label="Last Name"
@@ -42,6 +56,7 @@ const CustomerRegistration = () => {
           margin="normal"
           value={objData.lastName}
           onChange={handleChange}
+          required
         />
         <TextField
           label="Email"
@@ -51,6 +66,7 @@ const CustomerRegistration = () => {
           margin="normal"
           value={objData.email}
           onChange={handleChange}
+          required
         />
         <TextField
           label="Password"
@@ -60,6 +76,7 @@ const CustomerRegistration = () => {
           margin="normal"
           value={objData.password}
           onChange={handleChange}
+          required
         />
         <Button type="submit" variant="contained" color="primary">
           Register
@@ -69,4 +86,4 @@ const CustomerRegistration = () => {
   );
 };
 
-export default CustomerRegistration;
+export default AdminRegistration;

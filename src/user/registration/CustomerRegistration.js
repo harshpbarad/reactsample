@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
+import ToastMessage from '../../common-components/Toast';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import { config } from '../const';
-import ToastMessage from '../Toast';
+import * as authAction from "../../reducer-store/actions/authActions";
+import { isValidEmail } from '../../common-components/formValidator';
 
-const AdminLogin = () => {
+const CustomerRegistration = () => {
   const [objData, setObjData] = useState({});
+  const { customerRegister } = authAction;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,18 +16,46 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:5000/api/auth/login-admin", objData, config)
-      .then((res) => toast.success(res?.data?.msg), setObjData({}))
-      .catch((err) => toast.error(err?.response?.data?.errorMsg))
+
+    if (isValidEmail(objData?.email)) {
+      let resData = await customerRegister(objData);
+      
+      if (resData?.error) {
+        toast.error(resData?.errorMsg);
+        return;
+      }
+      else {
+        toast.success(resData?.msg);
+        return;
+      }
+    } else {
+      console.log("Not a valid email")
+    }
   };
 
   return (
     <Container maxWidth="sm">
       <ToastMessage />
       <Typography variant="h4" gutterBottom>
-        Admin Login
+        Customer Registration
       </Typography>
       <form onSubmit={handleSubmit}>
+        <TextField
+          label="First Name"
+          name="first_name"
+          fullWidth
+          margin="normal"
+          value={objData.firstName}
+          onChange={handleChange}
+        />
+        <TextField
+          label="Last Name"
+          name="last_name"
+          fullWidth
+          margin="normal"
+          value={objData.lastName}
+          onChange={handleChange}
+        />
         <TextField
           label="Email"
           type="email"
@@ -46,11 +75,11 @@ const AdminLogin = () => {
           onChange={handleChange}
         />
         <Button type="submit" variant="contained" color="primary">
-          Login
+          Register
         </Button>
       </form>
     </Container>
   );
 };
 
-export default AdminLogin;
+export default CustomerRegistration;

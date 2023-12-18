@@ -1,10 +1,10 @@
 // App.js
 import React from 'react';
 import { Routes, Route, } from 'react-router-dom';
-import CustomerRegistration from './Customer/CustomerRegistration';
-import AdminRegistration from './Admin/AdminRegistration';
-import AdminLogin from './Admin/AdminLogin';
-import Register from './Register';
+import CustomerRegistration from './user/registration/CustomerRegistration';
+import AdminRegistration from './user/registration/AdminRegistration';
+import AdminLogin from './user/login/AdminLogin';
+import Register from './common-components/Register';
 
 const App = () => {
   return (

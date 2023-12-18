@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import { config } from '../const';
-import ToastMessage from '../Toast';
+import ToastMessage from '../../common-components/Toast';
+import { bindActionCreators } from "redux";
+import * as authAction from "../../reducer-store/actions/authActions";
+import { useDispatch } from 'react-redux';
+import { isValidEmail } from '../../common-components/formValidator';
 
-const AdminRegistration = () => {
+const AdminLogin = () => {
+  const dispatch = useDispatch();
+  const { AdminLogin } = bindActionCreators(authAction, dispatch);
   const [objData, setObjData] = useState({});
 
   const handleChange = (e) => {
@@ -15,36 +19,30 @@ const AdminRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const resposne = await axios.post("http://localhost:5000/api/auth/register-admin", objData, config)
-      .then((res) => toast.success(res?.data?.msg), setObjData({}))
-      .catch((err) => toast.error(err?.response?.data?.errorMsg))
+
+    if (isValidEmail(objData?.email)) {
+      let resData = await AdminLogin(objData);
+
+      if (resData?.error) {
+        toast.error(resData?.errorMsg);
+        return;
+      }
+      else {
+        toast.success(resData?.msg);
+        return;
+      }
+    } else {
+      console.log("Not a valid email")
+    }
   };
 
   return (
     <Container maxWidth="sm">
       <ToastMessage />
       <Typography variant="h4" gutterBottom>
-        Admin Registration
+        Admin Login
       </Typography>
       <form onSubmit={handleSubmit}>
-        <TextField
-          label="First Name"
-          name="first_name"
-          fullWidth
-          margin="normal"
-          value={objData.firstName}
-          onChange={handleChange}
-          required
-        />
-        <TextField
-          label="Last Name"
-          name="last_name"
-          fullWidth
-          margin="normal"
-          value={objData.lastName}
-          onChange={handleChange}
-          required
-        />
         <TextField
           label="Email"
           type="email"
@@ -53,7 +51,6 @@ const AdminRegistration = () => {
           margin="normal"
           value={objData.email}
           onChange={handleChange}
-          required
         />
         <TextField
           label="Password"
@@ -63,14 +60,13 @@ const AdminRegistration = () => {
           margin="normal"
           value={objData.password}
           onChange={handleChange}
-          required
         />
         <Button type="submit" variant="contained" color="primary">
-          Register
+          Login
         </Button>
       </form>
     </Container>
   );
 };
 
-export default AdminRegistration;
+export default AdminLogin;

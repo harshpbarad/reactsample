@@ -10,7 +10,7 @@ const RegisterPage = () => {
             </Typography>
             <Button
                 component={Link}
-                to="/admin-register"
+                to="/admin-registration"
                 variant="contained"
                 color="primary"
                 style={{ marginRight: '16px' }}
@@ -19,7 +19,7 @@ const RegisterPage = () => {
             </Button>
             <Button
                 component={Link}
-                to="/customer-register"
+                to="/customer-registration"
                 variant="contained"
                 color="primary"
             >
